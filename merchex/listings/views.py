@@ -1,9 +1,11 @@
+from django.core.mail import send_mail
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from .forms import ContactUsForm
 from .models import Band
 from .models import Listings
+from listings.forms import ContactUsForm
 
 
 def band_list(request):
@@ -46,9 +48,27 @@ def contact_us(request):
     if request.method == 'POST':
         # créer une instance de notre formulaire et le remplir avec les données POST
         form = ContactUsForm(request.POST)
+
+        if form.is_valid():
+            send_mail(
+                subject=f'Message from {form.cleaned_data["name"] or "anonyme"} via MerchEx Contact Us form',
+                message=form.cleaned_data['message'],
+                from_email=form.cleaned_data['email'],
+                recipient_list=['admin@merchex.xyz'],
+            )
+            return redirect('email-sent')  # ajoutez cette instruction de retour
+
+        # si le formulaire n'est pas valide, nous laissons l'exécution continuer jusqu'au return
+        # ci-dessous et afficher à nouveau le formulaire (avec des erreurs).
+
     else:
         form = ContactUsForm()  # ajout d’un nouveau formulaire ici
 
     return render(request,
                   'listings/contact.html',
                   {'form': form})  # passe ce formulaire au gabarit
+
+
+def email_sent(request):
+    return render(request,
+                  'email_sent/email_sent.html')
