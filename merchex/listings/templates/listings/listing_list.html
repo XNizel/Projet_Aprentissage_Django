@@ -3,10 +3,13 @@
 {% block content %}
 
 <h1>Articles</h1>
-    <ul>
-        {% for listing in listings %}
-        <li><a href="{% url 'listing-detail' listing.id %}">{{ listing.title }}</a></li>
-        {% endfor %}
-    </ul>
+
+<a href="{% url 'listing-create' %}">Créer un nouvel article</a>
+
+<ul>
+    {% for listing in listings %}
+    <li><a href="{% url 'listing-detail' listing.id %}">{{ listing.title }}</a></li>
+    {% endfor %}
+</ul>
 
 {% endblock %}}

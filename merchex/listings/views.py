@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from .forms import ContactUsForm
 from .models import Band
 from .models import Listings
-from listings.forms import ContactUsForm
+from listings.forms import BandForm, ListingForm, ContactUsForm
 
 
 def band_list(request):
@@ -20,6 +20,42 @@ def band_detail(request, id):  # notez le paramètre id supplémentaire
     return render(request,
                   'bands/band_detail.html',
                   {'band': band})  # nous passons l'id au modèle
+
+
+def band_create(request):
+    if request.method == 'POST':
+        form = BandForm(request.POST)
+        if form.is_valid():
+            # créer une nouvelle « Band » et la sauvegarder dans la db
+            band = form.save()
+            # redirige vers la page de détail du groupe que nous venons de créer
+            # nous pouvons fournir les arguments du motif url comme arguments à la fonction de redirection
+            return redirect('band-detail', band.id)
+
+    else:
+        form = BandForm()
+
+    return render(request,
+                  'bands/band_create.html',
+                  {'form': form})
+
+
+def band_change(request, id):
+    band = Band.objects.get(id=id)
+
+    if request.method == 'POST':
+        form = BandForm(request.POST, instance=band)
+        if form.is_valid():
+            # mettre à jour le groupe existant dans la base de données
+            form.save()
+            # rediriger vers la page détaillée du groupe que nous venons de mettre à jour
+            return redirect('band-detail', band.id)
+    else:
+        form = BandForm(instance=band)
+
+    return render(request,
+                  'bands/band_change.html',
+                  {'form': form})
 
 
 def about(request):
@@ -39,6 +75,24 @@ def listings_detail(request, id):
     return render(request,
                   'listings/listing_detail.html',
                   {'listing': listings})
+
+
+def listing_create(request):
+    if request.method == 'POST':
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            # créer une nouvelle « Band » et la sauvegarder dans la db
+            listing = form.save()
+            # redirige vers la page de détail du groupe que nous venons de créer
+            # nous pouvons fournir les arguments du motif url comme arguments à la fonction de redirection
+            return redirect('listing-detail', listing.id)
+
+    else:
+        form = ListingForm()
+
+    return render(request,
+                  'listings/listing_create.html',
+                  {'form': form})
 
 
 def contact_us(request):

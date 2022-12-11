@@ -24,6 +24,8 @@
   {% endfor %}
 </ul>
 
+<a href="{% url 'band-change' band.id %}">Modifier ce groupe</a>
+
 <a href="{% url 'band-list' %}">Retour à tous les groupes</a>
 
 {% endblock %}
